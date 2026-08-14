@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% set page = "public" %}
+{% block title %}Marcador en directo | Punto Brazacorta{% endblock %}
+{% block content %}
+<main class="shell public-main" data-page="public">
+    <section class="intro-row">
+        <div>
+            <p class="eyebrow"><span class="live-pip"></span> Marcador en directo</p>
+            <h1>El partido<br><em>se cuenta aquí.</em></h1>
+        </div>
+        <div class="intro-note">
+            <span class="court-stamp">BZA / 2026</span>
+            <span>La pista, en tu bolsillo.</span>
+        </div>
+    </section>
+
+    <section id="live-match" class="live-match-region" aria-live="polite">
+        {% if state.active_match %}
+        <article class="score-card is-{{ state.active_match.status }}">
+            <div class="score-card-head">
+                <span class="status-label">{{ "EN JUEGO" if state.active_match.status == "live" else "PARTIDO PAUSADO" }}</span>
+                <span class="match-meta">{{ state.active_match.points_per_set }} · mejor de {{ state.active_match.best_of }}</span>
+            </div>
+            <div class="score-teams">
+                <div class="score-team team-a">
+                    <span class="team-swatch" style="--team-color: {{ state.active_match.team_a.color }}"></span>
+                    <strong>{{ state.active_match.team_a.name }}</strong>
+                    <span class="team-score">{{ state.active_match.sets[state.active_match.current_set - 1].score_a if state.active_match.sets else 0 }}</span>
+                </div>
+                <div class="versus"><span>SET {{ state.active_match.current_set }}</span><b>:</b><span class="match-clock">00:00</span></div>
+                <div class="score-team team-b">
+                    <span class="team-swatch" style="--team-color: {{ state.active_match.team_b.color }}"></span>
+                    <strong>{{ state.active_match.team_b.name }}</strong>
+                    <span class="team-score">{{ state.active_match.sets[state.active_match.current_set - 1].score_b if state.active_match.sets else 0 }}</span>
+                </div>
+            </div>
+            <div class="set-strip">
+                {% for set in state.active_match.sets %}<span class="set-pill">{{ set.score_a }}—{{ set.score_b }}</span>{% endfor %}
+            </div>
+        </article>
+        {% else %}
+        <article class="empty-live-card">
+            <span class="empty-orbit" aria-hidden="true"></span>
+            <p class="eyebrow">Ahora mismo</p>
+            <h2>La pista está<br><em>entre partidos.</em></h2>
+            <p id="empty-live-copy">En cuanto empiece el siguiente, el marcador aparecerá aquí.</p>
+        </article>
+        {% endif %}
+    </section>
+
+    <section class="public-lower-grid">
+        <section class="points-section" aria-labelledby="points-title">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Rastro del partido</p>
+                    <h2 id="points-title">Últimos puntos</h2>
+                </div>
+                <span class="live-counter" id="point-counter">EN VIVO</span>
+            </div>
+            <div id="points-feed" class="points-feed">
+                {% if state.active_match and state.active_match.points %}
+                    {% for point in state.active_match.points %}
+                    <div class="point-row">
+                        <span class="point-time">{{ "%02d:%02d"|format(point.elapsed_seconds // 60, point.elapsed_seconds % 60) }}</span>
+                        <span class="point-line"></span>
+                        <span class="point-team"><i style="--team-color: {{ point.team.color }}"></i>{{ point.team.name }}</span>
+                        <strong>{{ point.score_a }}—{{ point.score_b }}</strong>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-list"><span class="tiny-ball"></span><p>Los puntos irán apareciendo aquí.</p></div>
+                {% endif %}
+            </div>
+        </section>
+
+        <aside class="next-match-card" id="next-match-card">
+            <p class="eyebrow">Lo siguiente</p>
+            {% if state.next_match %}
+            <h2>{{ state.next_match.team_a.name }} <span>vs</span> {{ state.next_match.team_b.name }}</h2>
+            <div class="next-meta"><span>{{ state.next_match.points_per_set }} puntos por set</span><span>{{ state.next_match.status|upper }}</span></div>
+            {% else %}
+            <h2>El cuadro<br><em>está al día.</em></h2>
+            <div class="next-meta"><span>Consulta todos los cruces</span><a href="{{ url_for('public_bracket') }}">Ver cuadro →</a></div>
+            {% endif %}
+            <span class="card-court-line" aria-hidden="true"></span>
+        </aside>
+    </section>
+</main>
+
+<nav class="mobile-nav shell" aria-label="Navegación principal">
+    <a class="nav-item is-active" href="{{ url_for('public_home') }}"><span class="nav-icon nav-score" aria-hidden="true"></span><span>Marcador</span></a>
+    <a class="nav-item" href="{{ url_for('public_bracket') }}"><span class="nav-icon nav-bracket" aria-hidden="true"></span><span>Cuadro</span></a>
+</nav>
+{% endblock %}
+{% block scripts %}
+<script>window.APP_STATE = {{ state|tojson }};</script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/public.js') }}"></script>
+{% endblock %}

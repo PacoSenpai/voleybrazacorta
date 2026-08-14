@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% set page = "login" %}
+{% block title %}Acceso de árbitros | Punto Brazacorta{% endblock %}
+{% block content %}
+<main class="shell login-main">
+    <section class="login-card">
+        <div class="login-emblem"><span></span><span></span><span></span></div>
+        <p class="eyebrow">Zona de pista</p>
+        <h1>Entra al<br><em>marcador.</em></h1>
+        <p class="login-copy">Solo los árbitros pueden cambiar el resultado o controlar el reloj.</p>
+        {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+        <form method="post" action="{{ url_for('login') }}" class="stack-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <label>Usuario<input name="username" autocomplete="username" placeholder="arbitro1" required></label>
+            <label>Contraseña<input type="password" name="password" autocomplete="current-password" placeholder="••••••••" required></label>
+            <button class="button button-primary button-wide" type="submit">Entrar al control <span>→</span></button>
+        </form>
+        <a class="back-link" href="{{ url_for('public_home') }}">← Volver al marcador público</a>
+    </section>
+</main>
+{% endblock %}

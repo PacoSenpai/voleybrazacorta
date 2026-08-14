@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% set page = "admin" %}
+{% block title %}Control de pista | Punto Brazacorta{% endblock %}
+{% block content %}
+<main class="shell admin-main" data-page="admin">
+    <section class="admin-heading">
+        <div>
+            <p class="eyebrow"><span class="live-pip"></span> Control de pista</p>
+            <h1>Que no se<br><em>escape ningún punto.</em></h1>
+        </div>
+        <div class="admin-actions"><a class="text-button" href="{{ url_for('public_home') }}">Ver público ↗</a><button id="logout-button" class="text-button" type="button">Salir</button></div>
+    </section>
+
+    <section class="admin-layout">
+        <section class="admin-card setup-card" id="setup-card">
+            <div class="admin-card-heading"><div><p class="eyebrow">01 / Preparar</p><h2>Crear el torneo</h2></div><span class="step-badge">Setup</span></div>
+            <p class="admin-help">Añade un equipo por línea. El cuadro se adapta solo y crea pases automáticos si hacen falta.</p>
+            <form id="setup-form" class="stack-form">
+                <label>Nombre del torneo<input id="tournament-name" name="name" value="Torneo de Brazacorta" required></label>
+                <label>Equipos<textarea id="team-input" name="teams" rows="5" placeholder="Los Remeros\nLas Cañadas\nPueblo Arriba\nLas Eras" required></textarea></label>
+                <div class="stage-config-heading"><span>Reglas por ronda</span><small>Al mejor de 3 · diferencia de 2</small></div>
+                <div id="stage-fields" class="stage-fields"></div>
+                <button class="button button-primary button-wide" type="submit">Crear cuadro <span>→</span></button>
+                <p id="setup-message" class="form-message" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="admin-card control-card" id="control-card">
+            <div class="admin-card-heading"><div><p class="eyebrow">02 / En directo</p><h2>Marcador</h2></div><span id="admin-status-badge" class="step-badge">Sin partido</span></div>
+            <label class="match-select-label">Partido que vas a controlar<select id="match-selector"><option value="">Crea un torneo para empezar</option></select></label>
+            <div id="admin-match" class="admin-match-empty"><span class="empty-orbit"></span><p>Selecciona o crea un partido con dos equipos.</p></div>
+            <div id="control-actions" class="control-actions" hidden></div>
+        </section>
+
+        <section class="admin-card hydrate-card" id="hydrate-card">
+            <div class="admin-card-heading"><div><p class="eyebrow">03 / Si ya ha empezado</p><h2>Cargar marcador</h2></div><span class="step-badge">Reanudar</span></div>
+            <p class="admin-help">Selecciona un partido y escribe el marcador actual. Esto sirve para continuar un torneo que ya estaba en marcha.</p>
+            <form id="hydrate-form" class="hydrate-form">
+                <div class="form-grid form-grid-3">
+                    <label>Set actual<input id="hydrate-set" type="number" min="1" value="1"></label>
+                    <label>Sets A<input id="hydrate-sets-a" type="number" min="0" value="0"></label>
+                    <label>Sets B<input id="hydrate-sets-b" type="number" min="0" value="0"></label>
+                </div>
+                <div class="form-grid form-grid-3">
+                    <label>Puntos A<input id="hydrate-score-a" type="number" min="0" value="0"></label>
+                    <label>Puntos B<input id="hydrate-score-b" type="number" min="0" value="0"></label>
+                    <label>Tiempo <input id="hydrate-time" type="number" min="0" value="0"></label>
+                </div>
+                <label>Estado<select id="hydrate-status"><option value="paused">Pausado</option><option value="live">En juego</option><option value="scheduled">Sin empezar</option></select></label>
+                <button class="button button-secondary button-wide" type="submit">Guardar estado actual</button>
+                <p id="hydrate-message" class="form-message" aria-live="polite"></p>
+            </form>
+        </section>
+    </section>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>window.APP_STATE = {{ state|tojson }};</script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

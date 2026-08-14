@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0e2a2f">
+    <meta name="description" content="Marcador en directo del torneo de voleibol de Brazacorta">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="manifest" href="{{ url_for('manifest') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>{% block title %}Punto Brazacorta{% endblock %}</title>
+</head>
+<body class="page-{{ page|default('public') }}">
+    <header class="site-header shell">
+        <a class="brand" href="{{ url_for('public_home') }}" aria-label="Punto Brazacorta, inicio">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>
+                <span class="brand-name">Punto</span>
+                <span class="brand-place">Brazacorta</span>
+            </span>
+        </a>
+        {% if logged_user %}
+        <div class="session-chip">
+            <span class="online-dot"></span>
+            {{ logged_user.username }}
+        </div>
+        {% endif %}
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <footer class="site-footer shell">
+        <span>Voleibol en directo desde Brazacorta</span>
+        <a class="quiet-lock" href="{{ url_for('login') }}" aria-label="Acceso privado de árbitros" title="Acceso árbitros">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5.5 10h13v10h-13zM12 14v2"/></svg>
+        </a>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

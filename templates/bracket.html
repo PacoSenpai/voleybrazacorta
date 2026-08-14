@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% set page = "bracket" %}
+{% block title %}Cuadro del torneo | Punto Brazacorta{% endblock %}
+{% block content %}
+<main class="shell bracket-main" data-page="bracket">
+    <section class="bracket-heading">
+        <div>
+            <p class="eyebrow"><span class="live-pip"></span> Ruta del torneo</p>
+            <h1>El cuadro<br><em>se mueve.</em></h1>
+        </div>
+        <p class="heading-aside">Aquí puedes ver quién sigue en pie, qué cruce viene después y dónde está la pista ahora.</p>
+    </section>
+    <section id="bracket-summary" class="bracket-summary"></section>
+    <section id="bracket-root" class="bracket-scroll" aria-live="polite">
+        {% if state.stages %}
+        <div class="bracket-board">
+            {% for stage in state.stages %}
+            <section class="bracket-column">
+                <header class="column-header"><span>0{{ loop.index }}</span><h2>{{ stage.name }}</h2><small>{{ stage.points_per_set }} pts</small></header>
+                <div class="column-matches">
+                    {% for match in stage.matches %}
+                    <article class="bracket-match is-{{ match.status }}">
+                        <span class="match-number">{{ stage.name[:3]|upper }} · {{ "%02d"|format(loop.index) }}</span>
+                        <div>{{ match.team_a.name if match.team_a else "Por decidir" }} <b>{{ match.sets_a }}</b></div>
+                        <div>{{ match.team_b.name if match.team_b else "Por decidir" }} <b>{{ match.sets_b }}</b></div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bracket-empty"><span class="empty-orbit"></span><h2>El cuadro aún no está creado.</h2><p>El administrador podrá cargar los equipos cuando empiece el torneo.</p></div>
+        {% endif %}
+    </section>
+</main>
+
+<nav class="mobile-nav shell" aria-label="Navegación principal">
+    <a class="nav-item" href="{{ url_for('public_home') }}"><span class="nav-icon nav-score" aria-hidden="true"></span><span>Marcador</span></a>
+    <a class="nav-item is-active" href="{{ url_for('public_bracket') }}"><span class="nav-icon nav-bracket" aria-hidden="true"></span><span>Cuadro</span></a>
+</nav>
+{% endblock %}
+{% block scripts %}
+<script>window.APP_STATE = {{ state|tojson }};</script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bracket.js') }}"></script>
+{% endblock %}
